@@ -50,24 +50,23 @@ Atlassian Cloud 인스턴스 도메인? (예: cloud.jira.woowa.in)
 
 ### 1. 메타 수집
 
-**모드 A** — 인터뷰:
-1. 타입 (F/T) — F=분석, T=구현
-2. 제목 (한글)
-3. slug — Claude 가 제목에서 자동 변환(lowercase+hyphen) 후 그대로 사용 (확인 생략)
-4. 프로젝트 — `ls 01_projects/` 후보 + "없음" 옵션. 신규는 `01_projects/<name>/` 자동 생성
-5. 한 줄 골 (측정 가능)
-6. **목표일자** (YYYY-MM-DD, 자연어 `+7d`/`next-week` 등 허용 → ISO로 정규화)
-7. Jira 동시 생성? (Y/n) — MCP 가용+프로젝트 지정시 기본 Y
+**모드 A** — 인터뷰 (모든 신규는 타입 T = 테스크 고정):
+1. 제목 (한글)
+2. slug — Claude 가 제목에서 자동 변환(lowercase+hyphen) 후 그대로 사용 (확인 생략)
+3. 프로젝트 — `ls 01_projects/` 후보 + "없음" 옵션. 신규는 `01_projects/<name>/` 자동 생성
+4. 한 줄 골 (측정 가능)
+5. **목표일자** (YYYY-MM-DD, 자연어 `+7d`/`next-week` 등 허용 → ISO로 정규화)
+6. Jira 동시 생성? (Y/n) — MCP 가용+프로젝트 지정시 기본 Y
 
 **모드 B** — 폴더 읽기:
 - 폴더 정규화 → `brief.md`/`01_ask.md`, `goals.md` Read
-- 메타 추출(타입=폴더 prefix, slug=폴더명, 제목=brief 첫 H1, 골=goals.md 핵심)
+- 메타 추출(타입=폴더 prefix — 기존 F-/S- 과제는 그대로 인식, 신규는 항상 T, slug=폴더명, 제목=brief 첫 H1, 골=goals.md 핵심)
 - 이미 매핑됨(`Jira:` 또는 `[A-Z]+-\d+`) 있으면 종료(except `--force`)
 - 프로젝트 추론 실패 시 사용자 묻기
 
 **모드 C** — Jira 읽기:
 - Atlassian MCP 로 issue 조회(summary/description/labels/parent epic/project key)
-- 타입=라벨(`analysis`→F, `task`→T) 매칭, 실패 시 묻기
+- 타입=항상 T (모든 신규는 테스크). Jira 라벨에 `analysis` 가 있어도 T로 생성 (기존 F 과제는 별도 수기 마이그레이션)
 - slug=summary 한→영 변환 시도, 실패 시 입력
 - 프로젝트=parent epic의 `.jira.json` 검색, 미매칭 시 묻기
 
@@ -77,7 +76,7 @@ Atlassian Cloud 인스턴스 도메인? (예: cloud.jira.woowa.in)
 
 ```bash
 ${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/skills/..}/skills/wy-new-task/scripts/create_task.py \
-  --type "<F|T>" --title "<제목>" --slug "<slug>" \
+  --type T --title "<제목>" --slug "<slug>" \
   --project "<project|''>" --goal "<골>" \
   --local-root "<local_root>" --mode "<A|C>" \
   ${DUE_DATE:+--due-date "$DUE_DATE"} \
@@ -101,7 +100,7 @@ ${CLAUDE_PLUGIN_ROOT:-$HOME/.claude/skills/..}/skills/wy-new-task/scripts/create
 - summary=과제 한글 제목, description=골+brief 발췌
 - duedate=`$DUE_DATE` (ISO 8601, 있을 때만)
 - components=`[{"name": "$PART"}]` (있을 때만 — 컴포넌트가 프로젝트에 미리 등록되어 있어야 함, 없으면 사용자에게 안내)
-- labels=`["wy-task-mgmt", "<analysis|task>", "<project>"]`
+- labels=`["wy-task-mgmt", "task", "<project>"]`
 
 issue_key, issue_url 확보.
 

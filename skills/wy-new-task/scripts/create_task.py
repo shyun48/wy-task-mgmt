@@ -31,7 +31,7 @@ def kst_now() -> datetime:
 
 def parse_args() -> argparse.Namespace:
     p = argparse.ArgumentParser()
-    p.add_argument("--type", required=True, choices=["F", "T"])
+    p.add_argument("--type", default="T", choices=["F", "T"], help="기본 T (테스크). F 는 historical 호환용.")
     p.add_argument("--title", required=True, help="과제 제목 (한글 자유 형식)")
     p.add_argument("--slug", required=True, help="영문 slug (lowercase + hyphen)")
     p.add_argument("--project", default="", help="01_projects/ 하위 프로젝트명. 빈 값이면 무관")
@@ -231,8 +231,8 @@ def main() -> int:
         print(f"ERROR: 이미 존재: {task_dir}", file=sys.stderr)
         return 3
 
-    type_label = {"F": "분석 (Feature)", "S": "분석 (Signal)", "T": "구현 (Task)"}[args.type]
-    type_label_kr = "분석" if args.type in ("F", "S") else "구현"
+    type_label = {"F": "분석 (Feature)", "T": "구현 (Task)"}[args.type]
+    type_label_kr = "분석" if args.type == "F" else "구현"
     project_label = args.project if args.project else "(무관)"
 
     jira_lines = ""

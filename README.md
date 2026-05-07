@@ -13,6 +13,7 @@
 | `/wy-model-train` | 예측 모델 재학습 워크플로우 |
 | `/wy-model-evaluate` | 모델 성능 평가 및 비교 |
 | `/wy-sanity-check` | 코드 변경 후 5분 무결성 검증 |
+| `/wy-weather` | 우천 강도 표준화 (구군 × 30분 슬롯, 5단계 등급) — 비교 분석 표본 추출 / 전일자 우천 점검 |
 
 ## 설치
 
@@ -29,6 +30,8 @@ Claude Code 안에서:
 
 `/wy-session-done` 1회 호출 → 인터뷰로 `user_name` / `drive_root` / `local_root` 입력 → `~/.claude/skills/wy-session-done/config.json` 자동 생성 (플러그인 업데이트 무관하게 유지).
 
+`/wy-weather` 1회 셋업 → `bash $SKILL_DIR/scripts/setup.sh` 로 Trino 인증 정보 등록 (`.env` 파일 경로 + USER/PASS 변수명 입력) → `~/.config/wy-weather/config.env` 자동 생성. 인증값 자체는 저장하지 않고 .env 경로/키 이름만 저장.
+
 다른 스킬은 별도 셋업 불필요.
 
 ## 사용
@@ -43,6 +46,9 @@ Claude Code 안에서:
 /wy-model-train
 /wy-model-evaluate
 /wy-sanity-check
+
+# 기상 — 우천 강도 표준화
+/wy-weather                              # 또는 "어제 우천 강한 지역", "기상 강도", "find_similar"
 ```
 
 ## 업데이트 / 제거

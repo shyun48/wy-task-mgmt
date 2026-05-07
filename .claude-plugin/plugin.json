@@ -1,6 +1,6 @@
 {
   "name": "wy-task-mgmt",
-  "version": "0.8.7",
+  "version": "0.9.0",
   "description": "운영효율화팀 공용 Claude Code 스킬 — 세션 재개/종료 + 분석/모델 고도화 하네스",
   "author": {
     "name": "suhyun.kim"

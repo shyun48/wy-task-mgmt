@@ -1,23 +1,23 @@
 -- SQL name: weather_intensity_district.sql
 -- Parameters:
 --   precip_agg                  : _PRECIP_TYPE_PRIORITY.format(col=...) 결과 주입 (Python format)
---   log_ts_start, log_ts_end : datetime (UTC, 클라이언트 측 KST→UTC 변환 후 bind)
+--   log_ts_start, log_ts_end : KST timestamp literal (영업일 [start 06:00, end+1 06:00))
 --   start_minute, end_minute      : 운영시간 분 단위 정수, 360(06:00)~1620(27:00), end exclusive
 -- Source : engine/utils/trino_client.py (fetch_weather_intensity_district)
 -- Notes  :
---   - 운영 영업일(part_date) = KST 06:00 기준. 새벽 0~6시 = 전일 영업일.
---     part_date = DATE(kst_ts - INTERVAL '6' HOUR)
+--   - raw_log.log_ts 는 KST 로 동작 (Redash 검증 결과). +9h 변환 사용 안 함.
+--   - 운영 영업일(part_date) = KST 06:00 기준. 새벽 0~5시 = 전일 영업일.
+--     part_date = DATE(log_ts - INTERVAL '6' HOUR)
 --   - 운영시간 표기: 새벽 0~5시는 24~29시로 환산.
 --     op_minute_of_day = (kst_hour < 6 ? kst_hour+24 : kst_hour) * 60 + kst_minute
 --   - 출력 단위: H3 hex × 30분 슬롯. Python에서 h3_district_map으로 구군 매핑 + 최종 집계/등급화.
---   - log_ts(UTC) 검색범위: KST 영업일 [start 06:00, end+1 06:00) → UTC [start - 3h, end + 21h)
 --   - rainfallType='NONE' 및 dbz NULL 제외. dBZ 25 컷오프는 Python 후처리에서 적용.
 
 WITH precip AS (
   SELECT
-    log_ts + INTERVAL '9' HOUR AS kst_ts,
-    HOUR(log_ts + INTERVAL '9' HOUR)   AS kst_hour,
-    MINUTE(log_ts + INTERVAL '9' HOUR) AS kst_minute,
+    log_ts AS kst_ts,
+    HOUR(log_ts)   AS kst_hour,
+    MINUTE(log_ts) AS kst_minute,
     event_id AS h3_hex,
     JSON_EXTRACT_SCALAR(data, '$.weatherContext.rainfallType') AS precip_type,
     CAST(JSON_EXTRACT_SCALAR(data, '$.weatherContext.dbzAfter10Min') AS DOUBLE) AS dbz_10m,

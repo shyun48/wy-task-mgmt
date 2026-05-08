@@ -372,15 +372,15 @@ def fetch_weather_intensity_district(start_date, end_date,
     # precip CTE에서 이미 raw data → precip_type 컬럼으로 추출했으므로, outer 집계는 그 컬럼 참조.
     precip_agg = _PRECIP_TYPE_PRIORITY.format(col="precip_type")
 
-    # log_ts(UTC) 검색범위 — KST 영업일 [start 06:00, end+1 06:00) → UTC [start -3h, end +21h).
-    # SQLAlchemy 2.x + Trino dialect의 dict→list-of-dict wrapping 버그 회피용으로
-    # named bind 대신 SQL 안에 timestamp literal을 직접 substitute (값은 datetime이라 injection 없음).
+    # log_ts(KST) 검색범위 — 영업일 [start_date 06:00 KST, end_date+1 06:00 KST).
+    # raw_log.log_ts 는 KST 로 동작 (Redash 검증). +9h 변환 사용 안 함.
+    # SQLAlchemy 2.x + Trino dialect bind 회피용으로 SQL 안에 timestamp literal 직접 substitute.
     # start_minute/end_minute는 정수(검증된 _parse_op_minute 결과)라 함께 SQL format 치환.
     from datetime import timedelta
-    ts0 = datetime.strptime(f"{start_date} 00:00:00", "%Y-%m-%d %H:%M:%S")
-    ts1 = datetime.strptime(f"{end_date} 00:00:00", "%Y-%m-%d %H:%M:%S")
-    log_ts_start = f"TIMESTAMP '{(ts0 - timedelta(hours=3)).strftime('%Y-%m-%d %H:%M:%S')}'"
-    log_ts_end   = f"TIMESTAMP '{(ts1 + timedelta(hours=21)).strftime('%Y-%m-%d %H:%M:%S')}'"
+    ts0 = datetime.strptime(f"{start_date} 06:00:00", "%Y-%m-%d %H:%M:%S")
+    ts1 = datetime.strptime(f"{end_date} 06:00:00", "%Y-%m-%d %H:%M:%S") + timedelta(days=1)
+    log_ts_start = f"TIMESTAMP '{ts0.strftime('%Y-%m-%d %H:%M:%S')}'"
+    log_ts_end   = f"TIMESTAMP '{ts1.strftime('%Y-%m-%d %H:%M:%S')}'"
 
     sql = load_sql(
         "weather_intensity_district.sql",

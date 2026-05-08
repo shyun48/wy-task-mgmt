@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.9.1 — 2026-05-08
+
+### Fixed
+- `wy-weather`: `raw_log.log_ts` 가 KST 로 동작함이 Redash 검증으로 확인됨 → 모든 `+ INTERVAL '9' HOUR` 변환 제거.
+  - SQL: `log_ts AS kst_ts`, `HOUR(log_ts)`, `MINUTE(log_ts)` 직접 사용
+  - Python: raw period 계산을 영업일 KST 기준 `[start 06:00, end+1 06:00)` 으로 변경
+  - 이전 결과는 9시간 미래로 시프트되었으므로 v0.9.0 결과 재검증 필요
+
 ## v0.9.0 — 2026-05-07
 
 ### Added

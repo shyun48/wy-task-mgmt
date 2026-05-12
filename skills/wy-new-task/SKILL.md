@@ -63,7 +63,7 @@ argument-hint: "[<폴더경로>|<JIRA-KEY>|--no-jira|--project-key <KEY>|--due <
 **모드 C** — Jira 읽기:
 - Atlassian MCP 로 issue 조회(summary/description/labels/parent epic/project key)
 - 타입=항상 T (모든 신규는 테스크). Jira 라벨에 `analysis` 가 있어도 T로 생성 (기존 F 과제는 별도 수기 마이그레이션)
-- slug=summary 한→영 변환 시도, 실패 시 사용자 입력(이때도 별도 Q 신설 금지 — 한 줄로 "slug 를 입력해주세요" 만)
+- slug=summary 한→영 변환 시도, 실패 시 사용자 입력(이때도 별도 Q 신설 금지 — 한 줄로 "영문(자동) 값을 입력해주세요" 만)
 - 프로젝트=parent epic의 `.jira.json` 검색, 미매칭 시 → **Q5** 그대로 묻기
 - Jira 의 `duedate` 비어있으면 → **Q7** 그대로 묻기
 
@@ -225,8 +225,7 @@ Jira 티켓도 같이 발급할까요? (Y/n, 기본 Y)
 ```
 다음 내용으로 진행할까요?
   제목:          {title}
-  slug:          {slug_auto}
-  타입:          T (테스크)
+  영문(자동):     {slug_auto}
   프로젝트:       {project|(없음)}
   골:            {goal}
   목표일자:       {due_date|(미지정)}

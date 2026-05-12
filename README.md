@@ -8,7 +8,7 @@
 |------|------|
 | `/wy-new-task` | 신규 과제 폴더 + Jira 티켓 동시 생성 (4모드: 신규/역방향/정방향/매핑복구) |
 | `/wy-session-resume` | 새 세션 시작 시 활성 과제 컨텍스트 자동 회복 |
-| `/wy-session-done` | 세션 종료 시 진행 기록 + 클라우드 폴더 미러링 |
+| `/wy-session-done` | 세션 종료 시 진행 기록 + 클라우드 폴더 미러링 + (선택) Jira 댓글 갱신·상태 전환 |
 | `/wy-goal-loop` | 과제 폴더의 goals.md 를 목표 도달까지 자동 반복 |
 | `/wy-model-train` | 예측 모델 재학습 워크플로우 |
 | `/wy-model-evaluate` | 모델 성능 평가 및 비교 |

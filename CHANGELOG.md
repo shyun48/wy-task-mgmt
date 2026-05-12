@@ -1,5 +1,21 @@
 # Changelog
 
+## v0.10.0 — 2026-05-12
+
+### Added
+- **`/wy-session-done` Jira 연동**: 세션 종료 시 활성 과제 Jira 티켓에 세션 요약 댓글 자동 등록 (선택).
+  - 댓글 본문: handoff `이번 세션 요약` + `다음 세션 진입 시`, phase-done 일 땐 `페이즈 종료 요약` 추가.
+  - Jira 키 추출: `brief.md` / `01_ask.md` 상단 마커 → `registry.md` 폴백.
+  - 트리거 기본 켜짐, 매번 사용자에게 `(Y/n)` 확인. `--no-jira` 플래그로 강제 스킵.
+  - phase-done 한정으로 `jira_get_transitions` 결과 보여주고 상태 전환 여부 사용자 선택.
+  - MCP 미가용 / 매핑 없음 / 호출 실패 시 안내만 하고 Drive 동기화는 정상 진행.
+
+### Changed
+- **`/wy-new-task` 인터뷰 락다운**: 호출마다 문구가 달라지던 인터뷰를 `## 인터뷰 대본 (verbatim)` 섹션으로 고정.
+  - Q1~Q8 + Q-FINAL 의 한글 문구를 SKILL.md 에 verbatim 으로 박아 즉흥 재작성 금지.
+  - Step 0/1 본문은 "Q번호" 로 참조만 하도록 단순화 — 단일 출처 보장.
+  - 스킵 조건(플래그/config 캐시)을 각 Q 옆에 명시. 모드 A/B/C 진입 시 어느 Q 가 추가로 묻는지 명시.
+
 ## v0.9.1 — 2026-05-08
 
 ### Fixed
